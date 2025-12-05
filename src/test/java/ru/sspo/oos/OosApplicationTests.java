@@ -1,0 +1,13 @@
+package ru.sspo.oos;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class OosApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
