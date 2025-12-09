@@ -13,16 +13,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderService service;
+    private final OrderService orderService;
 
     @PostMapping
-    public Order create(@RequestBody CreateOrderRequest request) {
-        return service.createOrder(request);
+    public Order createOrder(@RequestBody CreateOrderRequest request) {
+        return orderService.createOrder(request);
     }
 
     @GetMapping
-    public List<Order> getAll() {
-        return service.getAll();
+    public List<Order> getAllOrders() {
+        return orderService.getAllOrders();
     }
 }
+
 
