@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформление заказа</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">🍕 Пиццерия</a>
+            <div class="navbar-links">
+                <a href="/">Меню</a>
+                <a href="/orders/track">Отследить заказ</a>
+                <a href="/admin/orders">Админ-панель</a>
+                <a href="/" class="btn btn-primary" style="padding: 0.5rem 1rem; text-decoration: none;">
+                    🛒 Вернуться к меню
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h1 class="card-title">Оформление заказа</h1>
+
+            <div id="orderSummary" class="mb-3"></div>
+
+            <form id="orderForm" onsubmit="submitOrder(event)">
+                <div class="form-group">
+                    <label for="clientName">Ваше имя *</label>
+                    <input type="text" id="clientName" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="clientPhone">Телефон *</label>
+                    <input type="tel" id="clientPhone" class="form-control" 
+                           placeholder="+79001234567" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Адрес доставки *</label>
+                    <textarea id="address" class="form-control" rows="3" 
+                              placeholder="Улица, дом, квартира" required></textarea>
+                </div>
+
+                <div id="errorMessage" class="alert alert-error hidden"></div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Создать заказ
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/order-create.js}"></script>
+</body>
+</html>
+

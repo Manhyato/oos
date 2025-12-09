@@ -1,5 +1,6 @@
 package ru.sspo.oos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -10,6 +11,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "couriers")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Для JPA прокси
 public class Courier {
 
     @Id

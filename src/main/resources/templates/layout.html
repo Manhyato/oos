@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title ?: 'Онлайн-система заказов пиццы'}">Онлайн-система заказов пиццы</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">🍕 Пиццерия</a>
+            <div class="navbar-links">
+                <a href="/">Меню</a>
+                <a href="/orders/track">Отследить заказ</a>
+                <a href="/admin/orders">Админ-панель</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div th:replace="${content}"></div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>
+

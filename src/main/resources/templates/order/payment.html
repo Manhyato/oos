@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата заказа</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">🍕 Пиццерия</a>
+            <div class="navbar-links">
+                <a href="/">Меню</a>
+                <a href="/orders/track">Отследить заказ</a>
+                <a href="/admin/orders">Админ-панель</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h1 class="card-title">Оплата заказа #<span th:text="${order.id}"></span></h1>
+
+            <div class="mb-3">
+                <p><strong>Сумма к оплате:</strong> <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' ₽'"></span></p>
+                <p><strong>Адрес доставки:</strong> <span th:text="${order.address}"></span></p>
+            </div>
+
+            <form id="paymentForm" onsubmit="processPayment(event)">
+                <div class="form-group">
+                    <label>Способ оплаты *</label>
+                    <select id="paymentMethod" class="form-control" required>
+                        <option value="">Выберите способ оплаты</option>
+                        <option value="CARD">Банковская карта</option>
+                        <option value="CASH">Наличные при получении</option>
+                    </select>
+                </div>
+
+                <div id="errorMessage" class="alert alert-error hidden"></div>
+                <div id="successMessage" class="alert alert-success hidden"></div>
+
+                <button type="submit" class="btn btn-success" style="width: 100%;" 
+                        th:disabled="${order.paid}">
+                    <span th:if="${order.paid}">Заказ уже оплачен</span>
+                    <span th:unless="${order.paid}">Оплатить</span>
+                </button>
+            </form>
+
+            <div th:if="${order.paid}" class="alert alert-success mt-2">
+                Заказ успешно оплачен!
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const orderId = /*[[${order.id}]]*/ null;
+        const isPaid = /*[[${order.paid}]]*/ false;
+    </script>
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/payment.js}"></script>
+</body>
+</html>
+

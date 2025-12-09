@@ -1,5 +1,6 @@
 package ru.sspo.oos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -10,6 +11,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "orders") // "order" — зарезервировано SQL
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Для JPA прокси
 public class Order {
 
     @Id
@@ -17,6 +19,7 @@ public class Order {
     private Long id;
 
     @ManyToOne
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Предотвращаем циклическую ссылку
     private Client client;
 
     private LocalDateTime createdAt;
@@ -35,9 +38,11 @@ public class Order {
      * Может быть null, если курьер ещё не назначен.
      */
     @ManyToOne
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Предотвращаем циклическую ссылку
     private Courier courier;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("order") // Предотвращаем циклическую ссылку
     private List<OrderItem> items;
 }
 

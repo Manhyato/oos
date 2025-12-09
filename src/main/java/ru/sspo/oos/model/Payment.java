@@ -1,5 +1,6 @@
 package ru.sspo.oos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Для JPA прокси
 public class Payment {
 
     @Id
@@ -15,6 +17,7 @@ public class Payment {
     private Long id;
 
     @OneToOne
+    @JsonIgnoreProperties({"items", "client", "courier", "payment"}) // Предотвращаем циклическую ссылку
     private Order order;
 
     private LocalDateTime paidAt;

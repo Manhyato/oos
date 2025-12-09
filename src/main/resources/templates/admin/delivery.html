@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление доставкой</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">🍕 Пиццерия</a>
+            <div class="navbar-links">
+                <a href="/">Меню</a>
+                <a href="/orders/track">Отследить заказ</a>
+                <a href="/admin/orders">Админ-панель</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h1 class="card-title">Управление доставкой</h1>
+            
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+            <div th:if="${waitingOrders == null || waitingOrders.isEmpty()}" class="alert alert-info">
+                Нет заказов, ожидающих назначения курьера
+            </div>
+
+            <div th:if="${waitingOrders != null && !waitingOrders.isEmpty()}">
+                <h3>Заказы, ожидающие курьера</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID заказа</th>
+                            <th>Клиент</th>
+                            <th>Адрес</th>
+                            <th>Сумма</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order : ${waitingOrders}">
+                            <td th:text="${order.id}"></td>
+                            <td th:text="${order.client.fullName}"></td>
+                            <td th:text="${order.address}"></td>
+                            <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' ₽'"></td>
+                            <td>
+                                <button class="btn btn-primary" 
+                                        th:onclick="'assignCourier(' + ${order.id} + ')'">
+                                    Назначить курьера
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="courierModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+        <div class="card" style="max-width: 500px;">
+            <h3>Выберите курьера</h3>
+            <div id="courierList"></div>
+            <button class="btn btn-secondary" onclick="closeCourierModal()">Отмена</button>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/admin-delivery.js}"></script>
+</body>
+</html>
+
