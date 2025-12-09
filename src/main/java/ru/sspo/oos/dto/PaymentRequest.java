@@ -1,5 +1,6 @@
 package ru.sspo.oos.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -7,5 +8,6 @@ import lombok.Data;
  */
 @Data
 public class PaymentRequest {
+    @NotBlank(message = "Способ оплаты обязателен")
     private String method; // "CASH", "CARD"
 }

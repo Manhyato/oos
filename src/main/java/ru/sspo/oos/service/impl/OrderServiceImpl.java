@@ -7,6 +7,7 @@ import ru.sspo.oos.model.Client;
 import ru.sspo.oos.model.Order;
 import ru.sspo.oos.model.OrderItem;
 import ru.sspo.oos.model.Pizza;
+import ru.sspo.oos.model.OrderStatus;
 import ru.sspo.oos.repository.ClientRepository;
 import ru.sspo.oos.repository.OrderItemRepository;
 import ru.sspo.oos.repository.OrderRepository;
@@ -43,10 +44,13 @@ public class OrderServiceImpl implements OrderService {
         Order newOrder = new Order();
         newOrder.setClient(client);
         newOrder.setPaid(false);
+        newOrder.setStatus(OrderStatus.NEW);
+        newOrder.setAddress(request.getAddress());
         newOrder.setCreatedAt(LocalDateTime.now());
         orderRepository.save(newOrder); // нужно сохранить сначала сам заказ
 
         List<OrderItem> items = new ArrayList<>();
+        BigDecimal total = BigDecimal.ZERO;
 
         // Создаём позиции заказа
         for (CreateOrderRequest.ItemRequest itemReq : request.getItems()) {
@@ -58,13 +62,18 @@ public class OrderServiceImpl implements OrderService {
             item.setOrder(newOrder);
             item.setPizza(pizza);
             item.setQuantity(itemReq.getQuantity());
-            item.setPrice(pizza.getPrice().multiply(
-                    BigDecimal.valueOf(itemReq.getQuantity()))
-            );
+
+            BigDecimal linePrice = pizza.getPrice().multiply(
+                    BigDecimal.valueOf(itemReq.getQuantity()));
+
+            item.setPrice(linePrice);
+            total = total.add(linePrice);
 
             orderItemRepository.save(item);
             items.add(item);
         }
+
+        newOrder.setTotalAmount(total);
 
         // Привязываем позиции к заказу и сохраняем
         newOrder.setItems(items);

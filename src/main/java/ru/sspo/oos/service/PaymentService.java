@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sspo.oos.dto.PaymentRequest;
 import ru.sspo.oos.model.Order;
+import ru.sspo.oos.model.OrderStatus;
 import ru.sspo.oos.model.Payment;
+import ru.sspo.oos.model.PaymentStatus;
 import ru.sspo.oos.repository.OrderRepository;
 import ru.sspo.oos.repository.PaymentRepository;
 
@@ -31,9 +33,12 @@ public class PaymentService {
         payment.setOrder(order);
         payment.setMethod(request.getMethod());
         payment.setPaidAt(LocalDateTime.now());
+        payment.setAmount(order.getTotalAmount());
+        payment.setStatus(PaymentStatus.SUCCESS);
         payment = paymentRepository.save(payment);
 
         order.setPaid(true);
+        order.setStatus(OrderStatus.PAID);
         orderRepository.save(order);
 
         return payment;

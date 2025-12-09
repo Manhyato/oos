@@ -2,6 +2,8 @@ package ru.sspo.oos.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,6 +22,13 @@ public class Order {
     private LocalDateTime createdAt;
 
     private boolean paid;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
+    private BigDecimal totalAmount;
+
+    private String address;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;

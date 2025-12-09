@@ -1,5 +1,6 @@
 package ru.sspo.oos.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.sspo.oos.dto.CreateOrderRequest;
@@ -16,7 +17,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public Order createOrder(@RequestBody CreateOrderRequest request) {
+    public Order createOrder(@RequestBody @Valid CreateOrderRequest request) {
         return orderService.createOrder(request);
     }
 

@@ -3,6 +3,7 @@ package ru.sspo.oos.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,4 +20,9 @@ public class Payment {
     private LocalDateTime paidAt;
 
     private String method; // "CARD", "CASH"
+
+    private BigDecimal amount;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
 }
