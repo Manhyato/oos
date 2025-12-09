@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sspo.oos.dto.PaymentRequest;
+import ru.sspo.oos.exception.BusinessException;
+import ru.sspo.oos.exception.ResourceNotFoundException;
 import ru.sspo.oos.model.Order;
 import ru.sspo.oos.model.OrderStatus;
 import ru.sspo.oos.model.Payment;
@@ -23,10 +25,10 @@ public class PaymentService {
     @Transactional
     public Payment payOrder(Long orderId, PaymentRequest request) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Заказ с ID " + orderId + " не найден"));
 
         if (order.isPaid()) {
-            throw new IllegalStateException("Order is already paid");
+            throw new BusinessException("Заказ уже оплачен");
         }
 
         Payment payment = new Payment();

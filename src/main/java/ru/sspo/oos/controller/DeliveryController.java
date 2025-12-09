@@ -1,5 +1,8 @@
 package ru.sspo.oos.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import java.util.List;
  * Контроллер для управления доставкой заказов.
  * Реализует REST API для процессов 3.1, 3.2, 3.3 из DFD.
  */
+@Tag(name = "Доставка", description = "API для управления доставкой заказов и курьерами")
 @RestController
 @RequestMapping("/api/delivery")
 @RequiredArgsConstructor
@@ -25,61 +29,51 @@ public class DeliveryController {
     private final DeliveryService deliveryService;
     private final CourierRepository courierRepository;
 
-    /**
-     * Получить список оплаченных заказов, ожидающих назначения курьера.
-     * Процесс 3.1 - входные данные для назначения курьера.
-     */
+    @Operation(summary = "Получить заказы, ожидающие курьера", description = "Возвращает список оплаченных заказов без назначенного курьера")
     @GetMapping("/orders/waiting")
     public List<Order> getOrdersWaitingForCourier() {
         return deliveryService.getOrdersWaitingForCourier();
     }
 
-    /**
-     * Назначить курьера на заказ (процесс 3.1).
-     * Если courierId не указан, назначается первый свободный курьер.
-     */
+    @Operation(summary = "Назначить курьера на заказ", description = "Назначает курьера на оплаченный заказ. Если courierId не указан, назначается первый свободный курьер")
     @PostMapping("/orders/{orderId}/assign")
     public Order assignCourier(
-            @PathVariable Long orderId,
-            @RequestParam(required = false) Long courierId
+            @Parameter(description = "ID заказа", required = true) @PathVariable Long orderId,
+            @Parameter(description = "ID курьера (опционально)") @RequestParam(required = false) Long courierId
     ) {
         return deliveryService.assignCourier(orderId, courierId);
     }
 
-    /**
-     * Получить информацию о доставке для курьера (процесс 3.2).
-     * Возвращает полную информацию о заказе: адрес, клиент, позиции.
-     */
+    @Operation(summary = "Получить информацию о доставке", description = "Возвращает полную информацию о заказе для курьера: адрес, клиент, позиции")
     @GetMapping("/orders/{orderId}/info")
-    public Order getDeliveryInfo(@PathVariable Long orderId) {
+    public Order getDeliveryInfo(
+            @Parameter(description = "ID заказа", required = true) @PathVariable Long orderId
+    ) {
         return deliveryService.getDeliveryInfo(orderId);
     }
 
-    /**
-     * Получить список заказов курьера.
-     */
+    @Operation(summary = "Получить заказы курьера", description = "Возвращает список заказов, назначенных конкретному курьеру")
     @GetMapping("/couriers/{courierId}/orders")
-    public List<Order> getCourierOrders(@PathVariable Long courierId) {
+    public List<Order> getCourierOrders(
+            @Parameter(description = "ID курьера", required = true) @PathVariable Long courierId
+    ) {
         return deliveryService.getCourierOrders(courierId);
     }
 
-    /**
-     * Обновить статус доставки (процесс 3.3).
-     * Курьер сообщает о текущем статусе: DELIVERING (в пути) или DELIVERED (доставлен).
-     */
+    @Operation(summary = "Обновить статус доставки", description = "Обновляет статус доставки заказа (DELIVERING или DELIVERED)")
     @PutMapping("/orders/{orderId}/status")
     public Order updateDeliveryStatus(
-            @PathVariable Long orderId,
+            @Parameter(description = "ID заказа", required = true) @PathVariable Long orderId,
             @RequestBody @Valid UpdateDeliveryStatusRequest request
     ) {
         return deliveryService.updateDeliveryStatus(orderId, request.getStatus());
     }
 
-    /**
-     * Получить статус доставки заказа для клиента.
-     */
+    @Operation(summary = "Получить статус доставки для клиента", description = "Возвращает текущий статус доставки заказа и имя курьера")
     @GetMapping("/orders/{orderId}/status")
-    public ResponseEntity<OrderStatusResponse> getOrderStatus(@PathVariable Long orderId) {
+    public ResponseEntity<OrderStatusResponse> getOrderStatus(
+            @Parameter(description = "ID заказа", required = true) @PathVariable Long orderId
+    ) {
         Order order = deliveryService.getDeliveryInfo(orderId);
         OrderStatusResponse response = new OrderStatusResponse();
         response.setOrderId(order.getId());
@@ -88,9 +82,7 @@ public class DeliveryController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Получить список всех курьеров.
-     */
+    @Operation(summary = "Получить всех курьеров", description = "Возвращает список всех курьеров в системе")
     @GetMapping("/couriers")
     public List<Courier> getAllCouriers() {
         return courierRepository.findAll();

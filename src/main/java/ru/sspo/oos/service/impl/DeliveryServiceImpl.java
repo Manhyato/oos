@@ -3,6 +3,8 @@ package ru.sspo.oos.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.sspo.oos.exception.BusinessException;
+import ru.sspo.oos.exception.ResourceNotFoundException;
 import ru.sspo.oos.model.Courier;
 import ru.sspo.oos.model.Order;
 import ru.sspo.oos.model.OrderStatus;
@@ -27,35 +29,35 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Transactional
     public Order assignCourier(Long orderId, Long courierId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Заказ не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Заказ с ID " + orderId + " не найден"));
 
         // Проверяем, что заказ оплачен
         if (!order.isPaid() || order.getStatus() != OrderStatus.PAID) {
-            throw new IllegalStateException("Можно назначить курьера только на оплаченный заказ");
+            throw new BusinessException("Можно назначить курьера только на оплаченный заказ");
         }
 
         // Проверяем, что курьер ещё не назначен
         if (order.getCourier() != null) {
-            throw new IllegalStateException("Курьер уже назначен на этот заказ");
+            throw new BusinessException("Курьер уже назначен на этот заказ");
         }
 
         Courier courier;
         if (courierId != null) {
             // Назначаем конкретного курьера
             courier = courierRepository.findById(courierId)
-                    .orElseThrow(() -> new IllegalArgumentException("Курьер не найден"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Курьер с ID " + courierId + " не найден"));
         } else {
             // Автоматически выбираем первого свободного курьера
             List<Courier> availableCouriers = courierRepository.findByAvailableTrue();
             if (availableCouriers.isEmpty()) {
-                throw new IllegalStateException("Нет доступных курьеров");
+                throw new BusinessException("Нет доступных курьеров");
             }
             courier = availableCouriers.get(0);
         }
 
         // Проверяем доступность курьера
         if (!courier.isAvailable()) {
-            throw new IllegalStateException("Курьер занят");
+            throw new BusinessException("Курьер занят");
         }
 
         // Назначаем курьера и обновляем статус
@@ -77,7 +79,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     public List<Order> getCourierOrders(Long courierId) {
         // Проверяем существование курьера
         if (!courierRepository.existsById(courierId)) {
-            throw new IllegalArgumentException("Курьер не найден");
+            throw new ResourceNotFoundException("Курьер с ID " + courierId + " не найден");
         }
 
         // Получаем заказы курьера со статусами доставки
@@ -91,17 +93,17 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Transactional
     public Order updateDeliveryStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Заказ не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Заказ с ID " + orderId + " не найден"));
 
         // Проверяем, что курьер назначен
         if (order.getCourier() == null) {
-            throw new IllegalStateException("Курьер не назначен на этот заказ");
+            throw new BusinessException("Курьер не назначен на этот заказ");
         }
 
         // Проверяем валидность перехода статуса
         OrderStatus currentStatus = order.getStatus();
         if (currentStatus == OrderStatus.DELIVERED) {
-            throw new IllegalStateException("Заказ уже доставлен");
+            throw new BusinessException("Заказ уже доставлен");
         }
 
         // Обновляем статус
@@ -120,11 +122,11 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     public Order getDeliveryInfo(Long orderId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Заказ не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Заказ с ID " + orderId + " не найден"));
 
         // Проверяем, что курьер назначен
         if (order.getCourier() == null) {
-            throw new IllegalStateException("Курьер не назначен на этот заказ");
+            throw new BusinessException("Курьер не назначен на этот заказ");
         }
 
         return order;

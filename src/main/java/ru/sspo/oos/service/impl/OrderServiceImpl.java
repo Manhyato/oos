@@ -3,6 +3,7 @@ package ru.sspo.oos.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.sspo.oos.dto.CreateOrderRequest;
+import ru.sspo.oos.exception.ResourceNotFoundException;
 import ru.sspo.oos.model.Client;
 import ru.sspo.oos.model.Order;
 import ru.sspo.oos.model.OrderItem;
@@ -56,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
         for (CreateOrderRequest.ItemRequest itemReq : request.getItems()) {
 
             Pizza pizza = pizzaRepository.findById(itemReq.getPizzaId())
-                    .orElseThrow(() -> new RuntimeException("Пицца не найдена!"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Пицца с ID " + itemReq.getPizzaId() + " не найдена"));
 
             OrderItem item = new OrderItem();
             item.setOrder(newOrder);
@@ -83,6 +84,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
+    }
+
+    @Override
+    public Order getOrderById(Long id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Заказ с ID " + id + " не найден"));
     }
 }
 
