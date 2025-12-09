@@ -3,8 +3,10 @@ package ru.sspo.oos.config;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.sspo.oos.model.Courier;
 import ru.sspo.oos.model.Pizza;
 import ru.sspo.oos.model.PizzaCategory;
+import ru.sspo.oos.repository.CourierRepository;
 import ru.sspo.oos.repository.PizzaCategoryRepository;
 import ru.sspo.oos.repository.PizzaRepository;
 
@@ -16,9 +18,18 @@ public class DataInitializer {
 
     private final PizzaRepository pizzaRepository;
     private final PizzaCategoryRepository categoryRepository;
+    private final CourierRepository courierRepository;
 
     @PostConstruct
     public void init() {
+        initMenu();
+        initCouriers();
+    }
+
+    /**
+     * Инициализация меню пицц.
+     */
+    private void initMenu() {
         if (pizzaRepository.count() == 0) {
             PizzaCategory classic = new PizzaCategory();
             classic.setName("Классические");
@@ -45,6 +56,31 @@ public class DataInitializer {
             p3.setPrice(BigDecimal.valueOf(600));
             p3.setCategory(special);
             pizzaRepository.save(p3);
+        }
+    }
+
+    /**
+     * Инициализация тестовых курьеров для MVP.
+     */
+    private void initCouriers() {
+        if (courierRepository.count() == 0) {
+            Courier courier1 = new Courier();
+            courier1.setName("Иван Петров");
+            courier1.setPhone("+79001111111");
+            courier1.setAvailable(true);
+            courierRepository.save(courier1);
+
+            Courier courier2 = new Courier();
+            courier2.setName("Сергей Сидоров");
+            courier2.setPhone("+79002222222");
+            courier2.setAvailable(true);
+            courierRepository.save(courier2);
+
+            Courier courier3 = new Courier();
+            courier3.setName("Алексей Козлов");
+            courier3.setPhone("+79003333333");
+            courier3.setAvailable(true);
+            courierRepository.save(courier3);
         }
     }
 }

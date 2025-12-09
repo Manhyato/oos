@@ -30,6 +30,13 @@ public class Order {
 
     private String address;
 
+    /**
+     * Курьер, назначенный на доставку заказа.
+     * Может быть null, если курьер ещё не назначен.
+     */
+    @ManyToOne
+    private Courier courier;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
 }
