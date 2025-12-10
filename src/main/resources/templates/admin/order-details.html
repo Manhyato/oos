@@ -3,83 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Детали заказа</title>
+    <title th:text="${title}">Заказ</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-content">
-            <a href="/" class="navbar-brand">🍕 Пиццерия</a>
-            <div class="navbar-links">
-                <a href="/">Меню</a>
-                <a href="/orders/track">Отследить заказ</a>
-                <a href="/admin/orders">Админ-панель</a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container">
-        <div class="card">
-            <h1 class="card-title">Заказ #<span th:text="${order.id}"></span></h1>
-
-            <div class="mb-3">
-                <p><strong>Клиент:</strong> <span th:text="${order.client.fullName}"></span></p>
-                <p><strong>Телефон:</strong> <span th:text="${order.client.phone}"></span></p>
-                <p><strong>Адрес:</strong> <span th:text="${order.address}"></span></p>
-                <p><strong>Дата создания:</strong> <span th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}"></span></p>
-                <p><strong>Статус:</strong> 
-                    <span class="status-badge" 
-                          th:classappend="${order.status == T(ru.sspo.oos.model.OrderStatus).NEW} ? 'status-new' : 
-                                         (order.status == T(ru.sspo.oos.model.OrderStatus).PAID) ? 'status-paid' :
-                                         (order.status == T(ru.sspo.oos.model.OrderStatus).DELIVERING || order.status == T(ru.sspo.oos.model.OrderStatus).DELIVERY_ASSIGNED) ? 'status-delivering' :
-                                         'status-delivered'}"
-                          th:text="${order.status}"></span>
-                </p>
-                <p><strong>Оплачен:</strong> 
-                    <span th:if="${order.paid}" class="status-badge status-paid">Да</span>
-                    <span th:unless="${order.paid}" class="status-badge status-new">Нет</span>
-                </p>
-                <p th:if="${order.courier}">
-                    <strong>Курьер:</strong> <span th:text="${order.courier.name}"></span> 
-                    (<span th:text="${order.courier.phone}"></span>)
-                </p>
-            </div>
-
-            <h3>Состав заказа:</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Пицца</th>
-                        <th>Количество</th>
-                        <th>Цена</th>
-                        <th>Сумма</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="item : ${order.items}">
-                        <td th:text="${item.pizza.name}"></td>
-                        <td th:text="${item.quantity}"></td>
-                        <td th:text="${#numbers.formatDecimal(item.pizza.price, 0, 'COMMA', 2, 'POINT')} + ' ₽'"></td>
-                        <td th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 2, 'POINT')} + ' ₽'"></td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="3"><strong>Итого:</strong></td>
-                        <td><strong th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' ₽'"></strong></td>
-                    </tr>
-                </tfoot>
-            </table>
-
-            <div th:if="${order.paid && !order.courier}" class="mt-3">
-                <a th:href="@{'/admin/delivery'}" class="btn btn-primary">
-                    Назначить курьера
-                </a>
-            </div>
+<nav class="navbar">
+    <div class="navbar-content">
+        <a href="/" class="navbar-brand">🍕 Пиццерия</a>
+        <div class="navbar-links">
+            <a href="/">Меню</a>
+            <a href="/orders/track">Отследить заказ</a>
+            <a href="/admin/orders">Админ-панель</a>
         </div>
     </div>
+</nav>
 
-    <script th:src="@{/js/main.js}"></script>
+<div class="container">
+    <div class="card">
+        <h1 class="card-title" th:text="${title}">Заказ</h1>
+
+        <div class="mb-3">
+            <p><strong>Клиент:</strong> <span th:text="${order.client != null ? order.client.fullName : '—'}"></span></p>
+            <p><strong>Телефон:</strong> <span th:text="${order.client != null ? order.client.phone : '—'}"></span></p>
+            <p><strong>Адрес:</strong> <span th:text="${order.address != null ? order.address : '—'}"></span></p>
+            <p><strong>Дата создания:</strong>
+                <span th:if="${order.createdAt != null}"
+                      th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
+                <span th:unless="${order.createdAt != null}">—</span>
+            </p>
+            <p><strong>Статус:</strong>
+                <span th:text="${order.status != null ? order.status : '—'}"
+                      th:class="${statusClass}"></span>
+            </p>
+            <p><strong>Оплачен:</strong>
+                <span th:if="${order.paid}">Да</span>
+                <span th:unless="${order.paid}">Нет</span>
+            </p>
+            <p th:if="${order.courier != null}">
+                <strong>Курьер:</strong>
+                <span th:text="${order.courier.name}"></span>
+                (<span th:text="${order.courier.phone}"></span>)
+            </p>
+        </div>
+
+        <h3>Состав заказа:</h3>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Пицца</th>
+                <th>Количество</th>
+                <th>Цена</th>
+                <th>Сумма</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${order.items}">
+                <td th:text="${item.pizza != null ? item.pizza.name : '—'}"></td>
+                <td th:text="${item.quantity}"></td>
+                <td th:text="${item.pizza != null ? item.pizza.price : 0} + ' ₽'"></td>
+                <td th:text="${item.price} + ' ₽'"></td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="3"><strong>Итого:</strong></td>
+                <td><strong th:text="${order.totalAmount} + ' ₽'"></strong></td>
+            </tr>
+            </tfoot>
+        </table>
+
+        <div th:if="${order.paid && order.courier == null}" class="mt-3">
+            <a th:href="@{'/admin/delivery'}" class="btn btn-primary">Назначить курьера</a>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
 </body>
 </html>
+
+
+
 

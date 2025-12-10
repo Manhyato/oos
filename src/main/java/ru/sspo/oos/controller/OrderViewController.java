@@ -7,11 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.sspo.oos.model.Order;
+import ru.sspo.oos.model.OrderStatus;
 import ru.sspo.oos.service.OrderService;
 
-/**
- * Контроллер для веб-страниц заказов.
- */
 @Controller
 @RequestMapping("/orders")
 @RequiredArgsConstructor
@@ -36,6 +34,19 @@ public class OrderViewController {
         Order order = orderService.getOrderById(id);
         model.addAttribute("order", order);
         model.addAttribute("title", "Заказ #" + id);
+
+        // Вычисляем CSS-класс для статуса здесь, в контроллере
+        String statusClass = "";
+        if (order.getStatus() != null) {
+            switch (order.getStatus()) {
+                case NEW -> statusClass = "status-new";
+                case PAID -> statusClass = "status-paid";
+                case DELIVERING, DELIVERY_ASSIGNED -> statusClass = "status-delivering";
+                case DELIVERED -> statusClass = "status-delivered";
+            }
+        }
+        model.addAttribute("statusClass", statusClass);
+
         return "order/details";
     }
 
@@ -47,3 +58,5 @@ public class OrderViewController {
         return "order/payment";
     }
 }
+
+

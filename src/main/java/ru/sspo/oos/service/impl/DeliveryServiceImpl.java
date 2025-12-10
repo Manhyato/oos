@@ -14,10 +14,6 @@ import ru.sspo.oos.service.DeliveryService;
 
 import java.util.List;
 
-/**
- * Реализация сервиса доставки.
- * Соответствует процессу 3.0 "Организация доставки" из DFD.
- */
 @Service
 @RequiredArgsConstructor
 public class DeliveryServiceImpl implements DeliveryService {
@@ -31,23 +27,19 @@ public class DeliveryServiceImpl implements DeliveryService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Заказ с ID " + orderId + " не найден"));
 
-        // Проверяем, что заказ оплачен
         if (!order.isPaid() || order.getStatus() != OrderStatus.PAID) {
             throw new BusinessException("Можно назначить курьера только на оплаченный заказ");
         }
 
-        // Проверяем, что курьер ещё не назначен
         if (order.getCourier() != null) {
             throw new BusinessException("Курьер уже назначен на этот заказ");
         }
 
         Courier courier;
         if (courierId != null) {
-            // Назначаем конкретного курьера
             courier = courierRepository.findById(courierId)
                     .orElseThrow(() -> new ResourceNotFoundException("Курьер с ID " + courierId + " не найден"));
         } else {
-            // Автоматически выбираем первого свободного курьера
             List<Courier> availableCouriers = courierRepository.findByAvailableTrue();
             if (availableCouriers.isEmpty()) {
                 throw new BusinessException("Нет доступных курьеров");
@@ -55,15 +47,13 @@ public class DeliveryServiceImpl implements DeliveryService {
             courier = availableCouriers.get(0);
         }
 
-        // Проверяем доступность курьера
         if (!courier.isAvailable()) {
             throw new BusinessException("Курьер занят");
         }
 
-        // Назначаем курьера и обновляем статус
         order.setCourier(courier);
         order.setStatus(OrderStatus.DELIVERY_ASSIGNED);
-        courier.setAvailable(false); // Помечаем курьера как занятого
+        courier.setAvailable(false);
 
         courierRepository.save(courier);
         return orderRepository.save(order);
@@ -71,18 +61,15 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public List<Order> getOrdersWaitingForCourier() {
-        // Получаем все оплаченные заказы без назначенного курьера
         return orderRepository.findByPaidAndCourierIsNull(true);
     }
 
     @Override
     public List<Order> getCourierOrders(Long courierId) {
-        // Проверяем существование курьера
         if (!courierRepository.existsById(courierId)) {
             throw new ResourceNotFoundException("Курьер с ID " + courierId + " не найден");
         }
 
-        // Получаем заказы курьера со статусами доставки
         return orderRepository.findByCourierIdAndStatusIn(
                 courierId,
                 List.of(OrderStatus.DELIVERY_ASSIGNED, OrderStatus.DELIVERING)
@@ -95,21 +82,16 @@ public class DeliveryServiceImpl implements DeliveryService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Заказ с ID " + orderId + " не найден"));
 
-        // Проверяем, что курьер назначен
         if (order.getCourier() == null) {
             throw new BusinessException("Курьер не назначен на этот заказ");
         }
 
-        // Проверяем валидность перехода статуса
-        OrderStatus currentStatus = order.getStatus();
-        if (currentStatus == OrderStatus.DELIVERED) {
+        if (order.getStatus() == OrderStatus.DELIVERED) {
             throw new BusinessException("Заказ уже доставлен");
         }
 
-        // Обновляем статус
         order.setStatus(status);
 
-        // Если заказ доставлен, освобождаем курьера
         if (status == OrderStatus.DELIVERED) {
             Courier courier = order.getCourier();
             courier.setAvailable(true);
@@ -121,15 +103,10 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public Order getDeliveryInfo(Long orderId) {
-        Order order = orderRepository.findById(orderId)
+        // 🔹 Ключевое изменение: возвращаем заказ с деталями, без проверки курьера
+        return orderRepository.findByIdWithDetails(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Заказ с ID " + orderId + " не найден"));
-
-        // Проверяем, что курьер назначен
-        if (order.getCourier() == null) {
-            throw new BusinessException("Курьер не назначен на этот заказ");
-        }
-
-        return order;
     }
 }
+
 
