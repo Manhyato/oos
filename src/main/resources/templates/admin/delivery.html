@@ -30,6 +30,7 @@
             <a href="/">Меню</a>
             <a href="/orders/track">Отследить заказ</a>
             <a href="/admin/orders">Админ-панель</a>
+            <button class="btn btn-secondary" onclick="adminLogout()">Выйти</button>
         </div>
     </div>
 </nav>
@@ -85,6 +86,10 @@
 </div>
 
 <script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/admin-auth.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', requireAdminAuth);
+</script>
 </body>
 </html>
 

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Финансовые отчёты</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-content">
+        <a href="/" class="navbar-brand">🍕 Пиццерия</a>
+        <div class="navbar-links">
+            <a href="/">Меню</a>
+            <a href="/orders/track">Отследить заказ</a>
+            <a href="/admin/orders">Админ-панель</a>
+            <button class="btn btn-secondary" onclick="adminLogout()">Выйти</button>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <h1 class="card-title">Финансовые отчёты</h1>
+
+        <section class="mb-3">
+            <div style="display:flex; justify-content: space-between; align-items:center;">
+                <h3>Отчёт за сегодня</h3>
+                <button class="btn btn-primary" data-download="today">Скачать CSV</button>
+            </div>
+            <table class="table" id="todayTable">
+                <thead>
+                <tr>
+                    <th>ID заказа</th>
+                    <th>Клиент</th>
+                    <th>Способ оплаты</th>
+                    <th>Статус</th>
+                    <th>Дата</th>
+                    <th>Сумма</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr><td colspan="6">Загрузка...</td></tr>
+                </tbody>
+            </table>
+            <div class="mt-1"><strong>Итого:</strong> <span id="todayTotal">—</span></div>
+        </section>
+
+        <section class="mb-3">
+            <div style="display:flex; justify-content: space-between; align-items:center;">
+                <h3>Отчёт за месяц</h3>
+                <button class="btn btn-primary" data-download="month">Скачать CSV</button>
+            </div>
+            <table class="table" id="monthTable">
+                <thead>
+                <tr>
+                    <th>ID заказа</th>
+                    <th>Клиент</th>
+                    <th>Способ оплаты</th>
+                    <th>Статус</th>
+                    <th>Дата</th>
+                    <th>Сумма</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr><td colspan="6">Загрузка...</td></tr>
+                </tbody>
+            </table>
+            <div class="mt-1"><strong>Итого:</strong> <span id="monthTotal">—</span></div>
+        </section>
+
+        <section>
+            <div style="display:flex; justify-content: space-between; align-items:center;">
+                <h3>Отчёт за период</h3>
+                <button class="btn btn-primary" data-download="period">Скачать CSV</button>
+            </div>
+            <form id="periodForm" class="mb-2" style="display:flex; gap:1rem; flex-wrap:wrap;">
+                <div>
+                    <label>Начало</label>
+                    <input id="startDate" type="datetime-local" class="form-control" required>
+                </div>
+                <div>
+                    <label>Конец</label>
+                    <input id="endDate" type="datetime-local" class="form-control" required>
+                </div>
+                <div style="align-self:flex-end;">
+                    <button type="submit" class="btn btn-success">Получить</button>
+                </div>
+            </form>
+            <table class="table" id="periodTable">
+                <thead>
+                <tr>
+                    <th>ID заказа</th>
+                    <th>Клиент</th>
+                    <th>Способ оплаты</th>
+                    <th>Статус</th>
+                    <th>Дата</th>
+                    <th>Сумма</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr><td colspan="6">Укажите период и нажмите «Получить»</td></tr>
+                </tbody>
+            </table>
+            <div class="mt-1"><strong>Итого:</strong> <span id="periodTotal">—</span></div>
+        </section>
+    </div>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/admin-auth.js}"></script>
+<script th:src="@{/js/admin-reports.js}"></script>
+</body>
+</html>
+

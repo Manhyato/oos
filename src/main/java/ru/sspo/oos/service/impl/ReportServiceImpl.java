@@ -44,7 +44,7 @@ public class ReportServiceImpl implements ru.sspo.oos.service.ReportService {
 
         BigDecimal totalRevenue = orders.stream()
                 .filter(Order::isPaid)
-                .map(Order::getTotalAmount)
+                .map(order -> order.getTotalAmount() != null ? order.getTotalAmount() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // Получаем все оплаты за период
@@ -55,7 +55,7 @@ public class ReportServiceImpl implements ru.sspo.oos.service.ReportService {
                 .collect(Collectors.toList());
 
         BigDecimal totalPaidAmount = payments.stream()
-                .map(Payment::getAmount)
+                .map(payment -> payment.getAmount() != null ? payment.getAmount() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // Формируем детализацию по заказам
@@ -69,7 +69,7 @@ public class ReportServiceImpl implements ru.sspo.oos.service.ReportService {
                     summary.setOrderId(order.getId());
                     summary.setOrderDate(order.getCreatedAt());
                     summary.setClientName(order.getClient() != null ? order.getClient().getFullName() : "Неизвестно");
-                    summary.setAmount(order.getTotalAmount());
+                    summary.setAmount(order.getTotalAmount() != null ? order.getTotalAmount() : BigDecimal.ZERO);
                     summary.setPaymentMethod(payment != null ? payment.getMethod() : "Не указан");
                     summary.setStatus(order.getStatus() != null ? order.getStatus().name() : "Неизвестно");
                     

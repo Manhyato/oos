@@ -64,3 +64,9 @@ function closeCourierModal() {
     currentOrderId = null;
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof requireAdminAuth === 'function') {
+        requireAdminAuth();
+    }
+});
+

@@ -29,9 +29,9 @@ async function processPayment(event) {
         successDiv.textContent = 'Заказ успешно оплачен! Перенаправление...';
         successDiv.classList.remove('hidden');
         
-        // Перейти на страницу деталей заказа через 2 секунды
+        // Перейти на страницу чека через 2 секунды
         setTimeout(() => {
-            window.location.href = `/orders/${orderId}`;
+            window.location.href = `/orders/${orderId}/receipt`;
         }, 2000);
     } catch (error) {
         errorDiv.textContent = error.message || 'Произошла ошибка при оплате';

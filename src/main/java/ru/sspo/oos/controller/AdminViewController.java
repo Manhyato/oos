@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.sspo.oos.model.Order;
 import ru.sspo.oos.service.DeliveryService;
 import ru.sspo.oos.service.OrderService;
+import ru.sspo.oos.service.PaymentService;
 
 import java.util.List;
 
@@ -22,6 +23,18 @@ public class AdminViewController {
 
     private final OrderService orderService;
     private final DeliveryService deliveryService;
+    private final PaymentService paymentService;
+
+    @GetMapping({"", "/"})
+    public String adminRoot() {
+        return "admin/login";
+    }
+
+    @GetMapping("/login")
+    public String loginPage(Model model) {
+        model.addAttribute("title", "Вход в админ-панель");
+        return "admin/login";
+    }
 
     @GetMapping("/orders")
     public String ordersPage(Model model) {
@@ -45,6 +58,17 @@ public class AdminViewController {
     public String orderDetails(@PathVariable Long id, Model model) {
         Order order = orderService.getOrderById(id);
         model.addAttribute("order", order);
+        model.addAttribute("payment", paymentService.getPaymentByOrderId(id).orElse(null));
+        String statusClass = "";
+        if (order.getStatus() != null) {
+            switch (order.getStatus()) {
+                case NEW -> statusClass = "status-new";
+                case PAID -> statusClass = "status-paid";
+                case DELIVERING, DELIVERY_ASSIGNED -> statusClass = "status-delivering";
+                case DELIVERED -> statusClass = "status-delivered";
+            }
+        }
+        model.addAttribute("statusClass", statusClass);
         model.addAttribute("title", "Заказ #" + id);
         return "admin/order-details";
     }
@@ -61,6 +85,18 @@ public class AdminViewController {
             model.addAttribute("waitingOrders", List.of());
             return "admin/delivery";
         }
+    }
+    
+    @GetMapping("/reports")
+    public String reportsPage(Model model) {
+        model.addAttribute("title", "Финансовые отчёты");
+        return "admin/reports";
+    }
+
+    @GetMapping("/menu")
+    public String menuPage(Model model) {
+        model.addAttribute("title", "Управление меню");
+        return "admin/categories";
     }
     
 }

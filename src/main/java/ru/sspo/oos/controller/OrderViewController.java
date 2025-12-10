@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.sspo.oos.model.Order;
 import ru.sspo.oos.model.OrderStatus;
 import ru.sspo.oos.service.OrderService;
+import ru.sspo.oos.service.PaymentService;
 
 @Controller
 @RequestMapping("/orders")
@@ -16,6 +17,7 @@ import ru.sspo.oos.service.OrderService;
 public class OrderViewController {
 
     private final OrderService orderService;
+    private final PaymentService paymentService;
 
     @GetMapping("/create")
     public String createOrderPage(Model model) {
@@ -33,6 +35,7 @@ public class OrderViewController {
     public String orderDetails(@PathVariable Long id, Model model) {
         Order order = orderService.getOrderById(id);
         model.addAttribute("order", order);
+        model.addAttribute("payment", paymentService.getPaymentByOrderId(id).orElse(null));
         model.addAttribute("title", "Заказ #" + id);
 
         // Вычисляем CSS-класс для статуса здесь, в контроллере
@@ -56,6 +59,15 @@ public class OrderViewController {
         model.addAttribute("order", order);
         model.addAttribute("title", "Оплата заказа #" + id);
         return "order/payment";
+    }
+
+    @GetMapping("/{id}/receipt")
+    public String receiptPage(@PathVariable Long id, Model model) {
+        Order order = orderService.getOrderById(id);
+        model.addAttribute("order", order);
+        model.addAttribute("payment", paymentService.getPaymentByOrderId(id).orElse(null));
+        model.addAttribute("title", "Чек по заказу #" + id);
+        return "order/receipt";
     }
 }
 

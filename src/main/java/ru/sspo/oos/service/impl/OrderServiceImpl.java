@@ -11,6 +11,7 @@ import ru.sspo.oos.model.Pizza;
 import ru.sspo.oos.model.OrderStatus;
 import ru.sspo.oos.repository.ClientRepository;
 import ru.sspo.oos.repository.OrderItemRepository;
+import ru.sspo.oos.repository.CourierRepository;
 import ru.sspo.oos.repository.OrderRepository;
 import ru.sspo.oos.repository.PizzaRepository;
 import ru.sspo.oos.service.OrderService;
@@ -28,6 +29,7 @@ public class OrderServiceImpl implements OrderService {
     private final ClientRepository clientRepository;
     private final PizzaRepository pizzaRepository;
     private final OrderItemRepository orderItemRepository;
+    private final CourierRepository courierRepository;
 
     @Override
     public Order createOrder(CreateOrderRequest request) {
@@ -88,8 +90,47 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order getOrderById(Long id) {
-        return orderRepository.findById(id)
+        // загружаем заказ с деталями, чтобы избежать LazyInitializationException на страницах деталей
+        return orderRepository.findByIdWithDetails(id)
+                .or(() -> orderRepository.findById(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Заказ с ID " + id + " не найден"));
+    }
+
+    @Override
+    public Order updateStatus(Long id, OrderStatus status) {
+        Order order = getOrderById(id);
+
+        // допустимые переходы статусов для админ-панели
+        switch (status) {
+            case PAID -> {
+                if (order.isPaid()) {
+                    return order;
+                }
+                order.setPaid(true);
+            }
+            case DELIVERY_ASSIGNED, DELIVERING -> {
+                if (!order.isPaid()) {
+                    throw new IllegalStateException("Нельзя назначить доставку для неоплаченного заказа");
+                }
+            }
+            case DELIVERED -> {
+                if (!order.isPaid()) {
+                    throw new IllegalStateException("Нельзя завершить доставку для неоплаченного заказа");
+                }
+            }
+            default -> { /* NEW → NEW, без дополнительных действий */ }
+        }
+
+        order.setStatus(status);
+        Order saved = orderRepository.save(order);
+
+        // Если заказ завершён доставкой — освобождаем курьера для новых назначений
+        if (status == OrderStatus.DELIVERED && order.getCourier() != null) {
+            order.getCourier().setAvailable(true);
+            courierRepository.save(order.getCourier());
+        }
+
+        return saved;
     }
 }
 

@@ -33,14 +33,18 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
         FinancialReport report;
-        
-        if (startDate != null && endDate != null) {
-            report = reportService.getFinancialReport(startDate, endDate);
-        } else {
-            // По умолчанию — отчёт за сегодня
+
+        if (startDate == null && endDate == null) {
             report = reportService.getTodayFinancialReport();
+        } else if (startDate == null || endDate == null) {
+            throw new IllegalArgumentException("Нужно указать и startDate, и endDate в формате ISO_DATE_TIME");
+        } else {
+            if (endDate.isBefore(startDate)) {
+                throw new IllegalArgumentException("endDate не может быть раньше startDate");
+            }
+            report = reportService.getFinancialReport(startDate, endDate);
         }
-        
+
         return ResponseEntity.ok(report);
     }
 

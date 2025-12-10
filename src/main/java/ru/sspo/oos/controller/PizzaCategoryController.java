@@ -30,7 +30,7 @@ public class PizzaCategoryController {
     // 🔥 JSON API для добавления категории
     @PostMapping("/api")
     @ResponseBody
-    public ResponseEntity<?> createCategory(@RequestBody PizzaCategoryRequest request) {
+    public ResponseEntity<?> createCategory(@RequestBody @jakarta.validation.Valid PizzaCategoryRequest request) {
         pizzaCategoryService.createCategory(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

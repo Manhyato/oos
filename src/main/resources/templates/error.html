@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ошибка</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-content">
+        <a href="/" class="navbar-brand">🍕 Пиццерия</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <h1 class="card-title">Произошла ошибка</h1>
+        <p th:text="${message != null ? message : 'К сожалению, произошла внутренняя ошибка.'}"></p>
+        <p th:if="${status != null}"><strong>Код:</strong> <span th:text="${status}"></span></p>
+        <p th:if="${error != null}"><strong>Описание:</strong> <span th:text="${error}"></span></p>
+        <a href="/" class="btn btn-primary">Вернуться на главную</a>
+    </div>
+</div>
+</body>
+</html>
+

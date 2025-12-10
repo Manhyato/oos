@@ -32,7 +32,14 @@
             </div>
         </div>
 
-        <h3>Все заказы</h3>
+        <div class="mb-2" style="display:flex; justify-content: space-between; align-items:center;">
+            <h3>Все заказы</h3>
+            <div>
+                <a href="/admin/menu" class="btn btn-secondary" style="margin-right:0.5rem;">Меню</a>
+                <a href="/admin/reports" class="btn btn-primary" style="margin-right:0.5rem;">Финансовые отчёты</a>
+                <button class="btn btn-secondary" onclick="adminLogout()">Выйти</button>
+            </div>
+        </div>
         <table class="table">
             <thead>
             <tr>
@@ -48,18 +55,24 @@
             <tbody>
             <tr th:each="order : ${orders}">
                 <td th:text="${order.id}"></td>
-                <td th:text="${order.client.fullName}"></td>
-                <td th:text="${order.address}"></td>
-                <td th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' ₽'"></td>
+                <td th:text="${order.client != null ? order.client.fullName : '—'}"></td>
+                <td th:text="${order.address != null ? order.address : '—'}"></td>
+                <td th:text="${order.totalAmount != null ? #numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT') + ' ₽' : '0 ₽'}"></td>
 
-                <!-- Упрощённый безопасный вывод статуса -->
                 <td>
-                    <span th:text="${order.status != null ? order.status : 'Неизвестно'}"></span>
+                    <select class="form-control" th:value="${order.status}" 
+                            th:attr="data-order-id=${order.id},data-status-select='true'">
+                        <option value="NEW">NEW</option>
+                        <option value="PAID">PAID</option>
+                        <option value="DELIVERY_ASSIGNED">DELIVERY_ASSIGNED</option>
+                        <option value="DELIVERED">DELIVERED</option>
+                    </select>
+                    <small class="order-status-text" th:text="${order.status != null ? order.status : '—'}"></small>
                 </td>
 
                 <td>
-                    <span th:if="${order.paid}" class="status-badge status-paid">Да</span>
-                    <span th:unless="${order.paid}" class="status-badge status-new">Нет</span>
+                    <span th:if="${order.paid}" class="status-badge status-paid paid-badge">Да</span>
+                    <span th:unless="${order.paid}" class="status-badge status-new paid-badge">Нет</span>
                 </td>
 
                 <td>
@@ -69,9 +82,11 @@
             </tbody>
         </table>
     </div>
-</div>ы
+</div>
 
 <script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/admin-auth.js}"></script>
+<script th:src="@{/js/admin-orders.js}"></script>
 </body>
 </html>
 

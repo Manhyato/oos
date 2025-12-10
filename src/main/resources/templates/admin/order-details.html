@@ -14,6 +14,7 @@
             <a href="/">Меню</a>
             <a href="/orders/track">Отследить заказ</a>
             <a href="/admin/orders">Админ-панель</a>
+            <button class="btn btn-secondary" onclick="adminLogout()">Выйти</button>
         </div>
     </div>
 </nav>
@@ -38,6 +39,13 @@
             <p><strong>Оплачен:</strong>
                 <span th:if="${order.paid}">Да</span>
                 <span th:unless="${order.paid}">Нет</span>
+            </p>
+            <p th:if="${payment != null}">
+                <strong>Оплата:</strong>
+                <span th:text="${payment.method}"></span>,
+                <span th:text="${payment.amount} + ' ₽'"></span>
+                (<span th:text="${payment.paidAt != null ? #temporals.format(payment.paidAt, 'dd.MM.yyyy HH:mm') : '—'}"></span>)
+                <a th:href="@{'/orders/' + ${order.id} + '/receipt'}" class="btn btn-secondary btn-small">Чек</a>
             </p>
             <p th:if="${order.courier != null}">
                 <strong>Курьер:</strong>
@@ -79,6 +87,10 @@
 </div>
 
 <script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/admin-auth.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', requireAdminAuth);
+</script>
 </body>
 </html>
 

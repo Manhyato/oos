@@ -1,21 +1,80 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Категории пицц</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление меню</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+<nav class="navbar">
+    <div class="navbar-content">
+        <a href="/" class="navbar-brand">🍕 Пиццерия</a>
+        <div class="navbar-links">
+            <a href="/admin/orders">Заказы</a>
+            <a href="/admin/reports">Отчёты</a>
+            <button class="btn btn-secondary" onclick="adminLogout()">Выйти</button>
+        </div>
+    </div>
+</nav>
 
-<h1>Управление категориями</h1>
+<div class="container">
+    <div class="card">
+        <h1 class="card-title">Управление меню</h1>
 
-<input type="text" id="categoryName" placeholder="Название категории">
-<button onclick="addCategory()">Добавить</button>
+        <section class="mb-3">
+            <h3>Категории</h3>
+            <div class="form-group" style="display:flex; gap:1rem; align-items:flex-end;">
+                <div style="flex:1;">
+                    <label>Название категории</label>
+                    <input type="text" id="categoryName" class="form-control" placeholder="Например, Классические">
+                </div>
+                <button class="btn btn-primary" onclick="addCategory()">Добавить</button>
+            </div>
+            <ul id="categories" class="mt-2"></ul>
+        </section>
 
-<h2>Список категорий</h2>
-<ul id="categories"></ul>
+        <section>
+            <h3>Пиццы</h3>
+            <form id="pizzaForm" class="mb-2" style="display:grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap:1rem;">
+                <div>
+                    <label>Название</label>
+                    <input type="text" id="pizzaName" class="form-control" required>
+                </div>
+                <div>
+                    <label>Цена (₽)</label>
+                    <input type="number" id="pizzaPrice" class="form-control" min="1" step="0.01" required>
+                </div>
+                <div>
+                    <label>Категория</label>
+                    <select id="pizzaCategory" class="form-control" required></select>
+                </div>
+                <div style="align-self:end;">
+                    <button type="submit" class="btn btn-success">Добавить пиццу</button>
+                </div>
+            </form>
 
-<script src="/js/categories.js"></script>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Категория</th>
+                    <th>Цена</th>
+                    <th>Действия</th>
+                </tr>
+                </thead>
+                <tbody id="pizzasTable">
+                <tr><td colspan="4">Загрузка...</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+</div>
 
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/admin-auth.js}"></script>
+<script th:src="@{/js/admin-menu.js}"></script>
 </body>
 </html>
 

@@ -14,6 +14,7 @@ import ru.sspo.oos.repository.OrderRepository;
 import ru.sspo.oos.repository.PaymentRepository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +29,9 @@ public class PaymentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Заказ с ID " + orderId + " не найден"));
 
         if (order.isPaid()) {
-            throw new BusinessException("Заказ уже оплачен");
+            // Возвращаем существующий платеж, чтобы не падать при повторной отправке (например, при Back)
+            return paymentRepository.findByOrderId(orderId)
+                    .orElseThrow(() -> new BusinessException("Заказ уже оплачен"));
         }
 
         Payment payment = new Payment();
@@ -44,6 +47,13 @@ public class PaymentService {
         orderRepository.save(order);
 
         return payment;
+    }
+
+    /**
+     * Получить чек/оплату по заказу (если уже оплачен).
+     */
+    public Optional<Payment> getPaymentByOrderId(Long orderId) {
+        return paymentRepository.findByOrderId(orderId);
     }
 }
 

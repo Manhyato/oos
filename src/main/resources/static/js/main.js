@@ -32,6 +32,17 @@ function showAlert(message, type = 'info') {
     setTimeout(() => alertDiv.remove(), 5000);
 }
 
+// Простой хук для проверки админки на странице без импорта дополнительных модулей
+function ensureAdminNav(buttonId = null) {
+    if (typeof requireAdminAuth === 'function') {
+        requireAdminAuth();
+    }
+    if (buttonId) {
+        const btn = document.getElementById(buttonId);
+        if (btn) btn.addEventListener('click', adminLogout);
+    }
+}
+
 // -------------------- Модальное окно выбора курьера --------------------
 const courierModal = document.getElementById('courierModal');
 const courierListContainer = document.getElementById('courierList');

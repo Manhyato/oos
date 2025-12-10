@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.sspo.oos.dto.CreateOrderRequest;
 import ru.sspo.oos.model.Order;
+import ru.sspo.oos.model.OrderStatus;
 import ru.sspo.oos.service.OrderService;
 
 import java.util.List;
@@ -42,6 +43,15 @@ public class OrderController {
             @Parameter(description = "ID заказа", required = true) @PathVariable Long id
     ) {
         return orderService.getOrderById(id);
+    }
+
+    @Operation(summary = "Обновить статус заказа", description = "Позволяет администратору перевести заказ в нужный статус")
+    @PatchMapping("/{id}/status")
+    public Order updateStatus(
+            @Parameter(description = "ID заказа", required = true) @PathVariable Long id,
+            @Parameter(description = "Новый статус заказа", required = true) @RequestParam OrderStatus status
+    ) {
+        return orderService.updateStatus(id, status);
     }
 }
 
