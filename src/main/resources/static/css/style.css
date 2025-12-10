@@ -319,7 +319,25 @@ body {
     border-radius: 20px;
     font-size: 0.875rem;
     font-weight: 500;
+} */
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #fff;
 }
+
+/* Маппинг со статусами */
+.new { background-color: #ff9800; }
+.paid { background-color: #4caf50; }
+.delivering, .delivery_assigned { background-color: #2196f3; }
+.delivered { background-color: #9e9e9e; }
+
+/* Оплачен/не оплачен */
+.paid { background-color: #4caf50; }
+.unpaid { background-color: #e53935; }
+
 
 .status-new {
     background: #bee3f8;
