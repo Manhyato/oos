@@ -30,12 +30,9 @@
                     <span th:if="${order.createdAt != null}" th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
                     <span th:unless="${order.createdAt != null}">—</span>
                 </p>
-                <p><strong>Статус:</strong> 
-                    <span class="status-badge" 
-                          th:classappend="${order.status == T(ru.sspo.oos.model.OrderStatus).NEW} ? 'status-new' : 
-                                         (order.status == T(ru.sspo.oos.model.OrderStatus).PAID) ? 'status-paid' :
-                                         (order.status == T(ru.sspo.oos.model.OrderStatus).DELIVERING || order.status == T(ru.sspo.oos.model.OrderStatus).DELIVERY_ASSIGNED) ? 'status-delivering' :
-                                         'status-delivered'}"
+                <p><strong>Статус:</strong>
+                    <span class="status-badge"
+                          th:classappend="${statusClass}"
                           th:text="${order.status}"></span>
                 </p>
                 <p th:if="${order.courier}"><strong>Курьер:</strong> <span th:text="${order.courier.name}"></span></p>
