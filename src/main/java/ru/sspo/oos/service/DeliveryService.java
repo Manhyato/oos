@@ -44,5 +44,10 @@ public interface DeliveryService {
      * @return Заказ с полной информацией для доставки
      */
     Order getDeliveryInfo(Long orderId);
+
+    /**
+     * Получить всех курьеров с актуализированным признаком доступности.
+     */
+    List<ru.sspo.oos.model.Courier> getAllCouriers();
 }
 

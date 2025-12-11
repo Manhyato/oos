@@ -11,7 +11,6 @@ import ru.sspo.oos.dto.UpdateDeliveryStatusRequest;
 import ru.sspo.oos.model.Courier;
 import ru.sspo.oos.model.Order;
 import ru.sspo.oos.model.OrderStatus;
-import ru.sspo.oos.repository.CourierRepository;
 import ru.sspo.oos.service.DeliveryService;
 
 import java.util.List;
@@ -27,7 +26,6 @@ import java.util.List;
 public class DeliveryController {
 
     private final DeliveryService deliveryService;
-    private final CourierRepository courierRepository;
 
     @Operation(summary = "Получить заказы, ожидающие курьера", description = "Возвращает список оплаченных заказов без назначенного курьера")
     @GetMapping("/orders/waiting")
@@ -85,7 +83,7 @@ public class DeliveryController {
     @Operation(summary = "Получить всех курьеров", description = "Возвращает список всех курьеров в системе")
     @GetMapping("/couriers")
     public List<Courier> getAllCouriers() {
-        return courierRepository.findAll();
+        return deliveryService.getAllCouriers();
     }
 
     /**

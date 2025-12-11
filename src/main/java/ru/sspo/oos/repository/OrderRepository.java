@@ -27,6 +27,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByCourierIdAndStatusIn(Long courierId, List<OrderStatus> statuses);
 
     /**
+     * Есть ли у курьера активные заказы в указанных статусах (для проверки занятости).
+     */
+    boolean existsByCourierIdAndStatusIn(Long courierId, List<OrderStatus> statuses);
+
+    /**
      * Получить заказ с полной информацией: курьер, клиент, позиции заказа с пиццей.
      * Нужно для отображения страницы /orders/{id} без LazyInitializationException
      */

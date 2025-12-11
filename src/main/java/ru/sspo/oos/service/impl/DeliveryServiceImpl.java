@@ -13,6 +13,7 @@ import ru.sspo.oos.repository.OrderRepository;
 import ru.sspo.oos.service.DeliveryService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -110,6 +111,27 @@ public class DeliveryServiceImpl implements DeliveryService {
         // 🔹 Ключевое изменение: возвращаем заказ с деталями, без проверки курьера
         return orderRepository.findByIdWithDetails(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Заказ с ID " + orderId + " не найден"));
+    }
+
+    @Override
+    public List<Courier> getAllCouriers() {
+        // Актуализируем available: если у курьера нет активных заказов, делаем его доступным.
+        List<OrderStatus> activeStatuses = List.of(OrderStatus.DELIVERY_ASSIGNED, OrderStatus.DELIVERING);
+
+        List<Courier> couriers = courierRepository.findAll();
+        List<Courier> updated = couriers.stream()
+                .map(courier -> {
+                    boolean hasActiveOrders = orderRepository.existsByCourierIdAndStatusIn(courier.getId(), activeStatuses);
+                    boolean shouldBeAvailable = !hasActiveOrders;
+                    if (courier.isAvailable() != shouldBeAvailable) {
+                        courier.setAvailable(shouldBeAvailable);
+                        return courierRepository.save(courier);
+                    }
+                    return courier;
+                })
+                .collect(Collectors.toList());
+
+        return updated;
     }
 }
 
