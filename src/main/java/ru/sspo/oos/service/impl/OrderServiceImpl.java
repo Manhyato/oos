@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.sspo.oos.dto.CreateOrderRequest;
 import ru.sspo.oos.exception.ResourceNotFoundException;
 import ru.sspo.oos.model.Client;
+import ru.sspo.oos.model.Courier;
 import ru.sspo.oos.model.Order;
 import ru.sspo.oos.model.OrderItem;
 import ru.sspo.oos.model.Pizza;
@@ -125,9 +126,10 @@ public class OrderServiceImpl implements OrderService {
         Order saved = orderRepository.save(order);
 
         // Если заказ завершён доставкой — освобождаем курьера для новых назначений
-        if (status == OrderStatus.DELIVERED && order.getCourier() != null) {
-            order.getCourier().setAvailable(true);
-            courierRepository.save(order.getCourier());
+        if (status == OrderStatus.DELIVERED && saved.getCourier() != null) {
+            Courier courier = saved.getCourier();
+            courier.setAvailable(true);
+            courierRepository.save(courier);
         }
 
         return saved;

@@ -17,7 +17,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findByPaidFalse();
 
-    List<Order> findByPaidAndCourierIsNull(boolean paid);
+    /**
+     * Оплаченные заказы без назначенного курьера и в заданных статусах.
+     * Используем фильтр по статусам, чтобы не подхватывать доставленные заказы,
+     * которым курьер не был назначен (например, из админки).
+     */
+    List<Order> findByPaidAndCourierIsNullAndStatusIn(boolean paid, List<OrderStatus> statuses);
 
     List<Order> findByCourierIdAndStatusIn(Long courierId, List<OrderStatus> statuses);
 

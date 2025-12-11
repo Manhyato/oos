@@ -61,7 +61,11 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public List<Order> getOrdersWaitingForCourier() {
-        return orderRepository.findByPaidAndCourierIsNull(true);
+        // Только оплаченные заказы, которые ещё ждут назначения курьера.
+        return orderRepository.findByPaidAndCourierIsNullAndStatusIn(
+                true,
+                List.of(OrderStatus.PAID)
+        );
     }
 
     @Override

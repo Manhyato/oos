@@ -42,7 +42,10 @@
             </div>
 
             <h3>Состав заказа:</h3>
-            <table class="table">
+            <div th:if="${order.items == null || order.items.isEmpty()}" class="alert alert-info">
+                Позиции заказа не найдены.
+            </div>
+            <table th:if="${order.items != null && !order.items.isEmpty()}" class="table">
                 <thead>
                     <tr>
                         <th>Пицца</th>
@@ -53,9 +56,9 @@
                 </thead>
                 <tbody>
                     <tr th:each="item : ${order.items}">
-                        <td th:text="${item.pizza != null ? item.pizza.name : '—'}"></td>
-                        <td th:text="${item.quantity}"></td>
-                        <td th:text="${item.pizza != null ? #numbers.formatDecimal(item.pizza.price, 0, 'COMMA', 2, 'POINT') + ' ₽' : '—'}"></td>
+                        <td th:text="${item.pizza != null && item.pizza.name != null ? item.pizza.name : '—'}"></td>
+                        <td th:text="${item.quantity != null ? item.quantity : '—'}"></td>
+                        <td th:text="${item.pizza != null && item.pizza.price != null ? #numbers.formatDecimal(item.pizza.price, 0, 'COMMA', 2, 'POINT') + ' ₽' : '—'}"></td>
                         <td th:text="${item.price != null ? #numbers.formatDecimal(item.price, 0, 'COMMA', 2, 'POINT') + ' ₽' : '—'}"></td>
                     </tr>
                 </tbody>
